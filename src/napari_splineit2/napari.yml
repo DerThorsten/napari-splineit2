@@ -1,0 +1,28 @@
+name: napari-splineit2
+display_name: Napari SplineIt2
+contributions:
+  commands:
+    - id: napari-splineit2.make_sample_data
+      python_name: napari_splineit2._sample_data:make_sample_data
+      title: Load sample data from Napari SplineIt2 
+    - id: napari-splineit2.make_qwidget
+      python_name: napari_splineit2._widget:ExampleQWidget
+      title: Make example QWidget
+    - id: napari-splineit2.make_magic_widget
+      python_name: napari_splineit2._widget:example_magic_widget
+      title: Make example magic widget
+    - id: napari-splineit2.make_func_widget
+      python_name: napari_splineit2._widget:example_function_widget
+      title: Make example function widget   
+  sample_data:
+    - command: napari-splineit2.make_sample_data
+      display_name: Napari SplineIt2
+      key: unique_id.1 
+  widgets:
+    - command: napari-splineit2.make_qwidget
+      display_name: Example QWidget
+    - command: napari-splineit2.make_magic_widget
+      display_name: Example Magic Widget
+    - command: napari-splineit2.make_func_widget
+      autogenerate: true
+      display_name: Example Function Widget 
