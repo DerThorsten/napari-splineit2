@@ -6,8 +6,8 @@ contributions:
       python_name: napari_splineit2._sample_data:make_sample_data
       title: Load sample data from Napari SplineIt2 
     - id: napari-splineit2.make_qwidget
-      python_name: napari_splineit2._widget:ExampleQWidget
-      title: Make example QWidget
+      python_name: napari_splineit2._widget:SplineitQWidget
+      title: Make example SplineitQWidget
     - id: napari-splineit2.make_magic_widget
       python_name: napari_splineit2._widget:example_magic_widget
       title: Make example magic widget
@@ -20,7 +20,7 @@ contributions:
       key: unique_id.1 
   widgets:
     - command: napari-splineit2.make_qwidget
-      display_name: Example QWidget
+      display_name: Splineit-QWidget
     - command: napari-splineit2.make_magic_widget
       display_name: Example Magic Widget
     - command: napari-splineit2.make_func_widget
