@@ -22,20 +22,35 @@ class SplineitQWidget(QWidget):
         super().__init__()
         self.viewer = napari_viewer
 
+        # add the widgets
+        self._setup_ui()
 
-        self.layer_name_edit = QLineEdit("Splines")
-
-        btn = QPushButton("Click me!!!!")
-        btn.clicked.connect(self._on_click)
+        # connect the widgets events / signals
+        self._connect_ui()
 
 
+    def _setup_ui(self):
+        self._layer_name_edit = QLineEdit("Splines")
+        self._add_layer_btn = QPushButton("Click me!!!!")
+        
 
         self.setLayout(QHBoxLayout())
-        self.layout().addWidget(self.layer_name_edit)
-        self.layout().addWidget(btn)
+        self.layout().addWidget(self._layer_name_edit)
+        self.layout().addWidget(self._add_layer_btn)
+
+    def _connect_ui(self):
+        self._add_layer_btn.clicked.connect(self._on_click)
+
+    # todo check for name clashes
+    def _get_layer_base_name(self):
+        base_name = self._layer_name_edit.text()
+        return base_name
+
+
 
     def _on_click(self):
-        base_name = self.layer_name_edit.text()
+        
+        base_name = self._get_layer_base_name()
         interpolation_factory(self.viewer, ctrl_layer_name=f"{base_name}-CTRL", interpolated_layer_name=f"{base_name}-Interpolated")
 
 

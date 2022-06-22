@@ -13,6 +13,24 @@ from napari.layers.shapes.shapes import Mode
 from ._shape_list import CtrlLayerShapeList
 
 
+
+from napari._qt.layer_controls.qt_shapes_controls import QtShapesControls
+from napari._qt.layer_controls.qt_layer_controls_container import layer_to_controls
+
+
+class CtrlLayerControls(QtShapesControls):
+    def __init__(self, *args, **kwargs):
+        super(CtrlLayerControls, self).__init__(*args, **kwargs)
+
+        # we only allow for polygon shapes and disable
+        # all other shapes
+        self.rectangle_button.setEnabled(False)
+        self.ellipse_button.setEnabled(False)
+        self.line_button.setEnabled(False)
+        self.path_button.setEnabled(False)
+
+
+
 def curve_from_cp(cp):
 
     if cp.shape[0]>3:
@@ -78,3 +96,6 @@ class CtrlPtrLayer(ShapesLayer):
 
         self._data_view = new_data_view
         self._update_dims()
+
+
+layer_to_controls[CtrlPtrLayer] = CtrlLayerControls
