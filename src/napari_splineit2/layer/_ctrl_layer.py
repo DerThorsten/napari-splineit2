@@ -1,7 +1,6 @@
 
 import napari
-from napari_splineit2.utils import phi_generator_impl,getCoefsFromKnots
-from napari_splineit2.splinegenerator import SplineCurveSample, B3, B2
+
 import numpy as np
 from skimage import data
 import random
@@ -19,8 +18,8 @@ from napari._qt.layer_controls.qt_layer_controls_container import layer_to_contr
 
 
 class CtrlLayerControls(QtShapesControls):
-    def __init__(self, *args, **kwargs):
-        super(CtrlLayerControls, self).__init__(*args, **kwargs)
+    def __init__(self, layer):
+        super(CtrlLayerControls, self).__init__(layer)
 
         # we only allow for polygon shapes and disable
         # all other shapes
@@ -29,21 +28,19 @@ class CtrlLayerControls(QtShapesControls):
         self.line_button.setEnabled(False)
         self.path_button.setEnabled(False)
 
+        interpolator_ui_cls = type(layer.interpolator).UI
 
+        self.layer_ui = interpolator_ui_cls(layer=layer)
 
-def curve_from_cp(cp):
+        # self.layout().addRow(type(layer.interpolator).name, self.layer_ui)
+        self.layout().addRow(self.layer_ui)
 
-    if cp.shape[0]>3:
-        cp = getCoefsFromKnots(cp, "cubic")    
-        phi = phi_generator_impl(cp.shape[0], 20 * cp.shape[0], "cubic")
-        SplineContour = SplineCurveSample(cp.shape[0], B3(), True, cp)
-        curve = SplineContour.sample(phi)
-        return curve
-    return cp.copy()
 
 class CtrlPtrLayer(ShapesLayer):
-    def __init__(self, *args, interpolated_layer, **kwargs):
+    def __init__(self, *args, interpolator, interpolated_layer, **kwargs):
+        self.interpolator = interpolator
         self.interpolated_layer = interpolated_layer
+        self.interpolated_layer.ctrl_layer = self
         super(CtrlPtrLayer, self).__init__(*args,    
          edge_color="transparent",
         face_color="transparent",**kwargs)
@@ -69,7 +66,10 @@ class CtrlPtrLayer(ShapesLayer):
         self.interpolated_layer.add(data=data, shape_type=shape_type,**kwargs)
 
     def interpolate(self,data):
-        return curve_from_cp(data)
+        return self.interpolator(data)
+
+    def run_interpolation(self):
+        self._data_view.run_interpolation()
 
     @property
     def shape_type(self):

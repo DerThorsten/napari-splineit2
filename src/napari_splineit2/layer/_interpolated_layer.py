@@ -5,9 +5,11 @@ from napari._qt.layer_controls.qt_shapes_controls import QtShapesControls
 from napari._qt.layer_controls.qt_layer_controls_container import layer_to_controls
 
 
+
 class InterpolatedLayerControls(QtShapesControls):
     def __init__(self, *args, **kwargs):
         super(InterpolatedLayerControls, self).__init__(*args, **kwargs)
+
 
         # disable interactions which are prohibited
         # since we do them on the ctrl layer and
@@ -31,12 +33,14 @@ class InterpolatedLayer(ShapesLayer):
         super(InterpolatedLayer, self).__init__(*args,**kwargs)
         self.mode = Mode.PAN_ZOOM
 
+        # this is set in the constructor of CtrlPtrLayer
+        self.ctrl_layer = None
 
-        self.events.mode.connect(self._on_mode)
+    #     self.events.mode.connect(self._on_mode)
 
 
-    def _on_mode(self, event):
-        print("on_mode",event.mode)
+    # def _on_mode(self, event):
+    #     print("on_mode",event.mode)
 
 
 layer_to_controls[InterpolatedLayer] = InterpolatedLayerControls

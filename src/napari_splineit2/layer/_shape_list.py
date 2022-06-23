@@ -34,6 +34,13 @@ class CtrlLayerShapeList(ShapeList):
 
         self.update_interpolated(index=index, data=new_data, new_type=new_type)
 
+
+    def run_interpolation(self):
+        for index,s in enumerate(self.shapes):
+            new_data = self.ctrl_layer.interpolate(s.data)
+            self.update_interpolated(index=index, data=new_data, new_type=None)
+        self.interpolated_layer.refresh()
+
     def update_interpolated(self, data, index, new_type=None):
         with self.interpolated_layer.events.set_data.blocker():
             self.interpolated_layer._data_view.edit(index=index, data=data, new_type=new_type)

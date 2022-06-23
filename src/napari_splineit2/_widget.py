@@ -10,7 +10,7 @@ from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLineEdit
 from magicgui import magic_factory
 
 from .layer.layer_factory import interpolation_factory
-
+from .interpolation import CubicInterpolator,SplineInterpolator
 
 
 class SplineitQWidget(QWidget):
@@ -49,9 +49,13 @@ class SplineitQWidget(QWidget):
 
 
     def _on_click(self):
-        
+        interpolator = CubicInterpolator()
+        interpolator = SplineInterpolator(k=3)
         base_name = self._get_layer_base_name()
-        interpolation_factory(self.viewer, ctrl_layer_name=f"{base_name}-CTRL", interpolated_layer_name=f"{base_name}-Interpolated")
+        interpolation_factory(self.viewer, 
+            interpolator=interpolator, 
+            ctrl_layer_name=f"{base_name}-CTRL", 
+            interpolated_layer_name=f"{base_name}-Interpolated")
 
 
 @magic_factory
