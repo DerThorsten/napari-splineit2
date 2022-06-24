@@ -38,6 +38,7 @@ class CtrlLayerControls(QtShapesControls):
         self.layout().addRow(self.layer_ui)
 
 
+
 class CtrlPtrLayer(ShapesLayer):
     def __init__(self, *args, interpolator, interpolated_layer, **kwargs):
         self.interpolator = interpolator
@@ -56,16 +57,26 @@ class CtrlPtrLayer(ShapesLayer):
             list(self._dims_not_displayed)
         ]
 
+    # needed to make writer possible
+    @property
+    def _type_string(self):
+        return "shapes"
+
     def add(self, data, *, shape_type, **kwargs):
-        print(f"add {shape_type=}")
         if shape_type != "polygon" and shape_type!="path":
             raise RuntimeError("only polygon and path are supported")
 
+        if isinstance(data, list):
+            for poly in data:
+                super(CtrlPtrLayer, self).add(data=poly, shape_type=shape_type, **kwargs)
+                interpolated = self.interpolate(data=poly)
+                self.interpolated_layer.add(data=interpolated, shape_type=shape_type,**kwargs)
 
-        super(CtrlPtrLayer, self).add(data=data, shape_type=shape_type, **kwargs)
+        else:
 
-        interpolated = self.interpolate(data=data)
-        self.interpolated_layer.add(data=data, shape_type=shape_type,**kwargs)
+            super(CtrlPtrLayer, self).add(data=data, shape_type=shape_type, **kwargs)
+            interpolated = self.interpolate(data=data)
+            self.interpolated_layer.add(data=interpolated, shape_type=shape_type,**kwargs)
 
     def interpolate(self,data):
         return self.interpolator(data)

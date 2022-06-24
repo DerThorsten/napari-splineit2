@@ -13,14 +13,18 @@ def layer_factory(viewer, interpolator, data=None, ctrl_layer_name="CtrLayer", i
 
     ctrl_layer = CtrlPtrLayer(
         name=ctrl_layer_name, 
+        metadata={"interpolator":interpolator},
         interpolator=interpolator,
         interpolated_layer=interpolated_layer)
 
     viewer.add_layer(ctrl_layer)
 
     if data is not None:
+        print(data)
+        for poly in data:
+            print(poly,poly.shape)
         ctrl_layer.add_polygons(data=data)
-        ctrl_layer.run_interpolation()
+        # ctrl_layer.run_interpolation()
 
     # if either of the layers is deleted
     # we also delete the other one

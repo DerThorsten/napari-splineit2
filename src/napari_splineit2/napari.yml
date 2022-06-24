@@ -8,10 +8,19 @@ contributions:
     - id: napari-splineit2.make_qwidget
       python_name: napari_splineit2._widget:SplineitQWidget
       title: Make example SplineitQWidget
-
     - id: napari-splineit2.read_splineit
       title: Read ".splineit" files
       python_name: napari_splineit2._reader:get_reader
+    - id: napari-splineit2.write_splineit_json
+      title: Save splineit control points to json
+      python_name: napari_splineit2._writer:write_splineit_json
+
+  writers:
+    - command: napari-splineit2.write_splineit_json
+      layer_types:
+      - shapes
+      filename_extensions:
+      - .splineit
 
   readers:
     - command: napari-splineit2.read_splineit

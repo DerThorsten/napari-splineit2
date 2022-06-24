@@ -23,6 +23,9 @@ def splineit_file_reader(path):
     list_of_polygons = raw_data['data']
     list_of_polygons = [numpy.array(p) for p in list_of_polygons]
 
+    for poly in list_of_polygons:
+        print("PS",poly.shape, poly.dtype)
+
     # the interpolator arguments
     name = raw_data['method']['name']
     kwargs = raw_data['method']['args']

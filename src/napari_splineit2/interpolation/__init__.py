@@ -146,6 +146,14 @@ class SplineInterpolator(object):
             print(ret.shape)
             return ret
 
+    # return a dict which can be passed to constructor
+    def marshal(self):
+        return {
+            "k":self.k,
+            "s":self.s,
+            "n":self.n
+        }
+
 class CubicInterpolatorUI(QWidget):
     def __init__(self, layer):
         super(CubicInterpolatorUI, self).__init__()
@@ -156,8 +164,7 @@ class CubicInterpolator(object):
     UI = CubicInterpolatorUI
     name = "CubicInterpolator"
 
-    def __init__(self):
-        pass
+
     def __call__(self, ctrl_points):
         ctrl_points = np.require(ctrl_points)
         if ctrl_points.shape[0] < 3:
@@ -179,6 +186,10 @@ class CubicInterpolator(object):
     
             ret =  np.concatenate([xx, yy], axis=1)
             return ret
+
+    def marshal(self):
+        return dict()
+
 
 interpolators = {
     CubicInterpolator.name : CubicInterpolator,
