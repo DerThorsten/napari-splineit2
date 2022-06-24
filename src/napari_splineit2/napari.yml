@@ -2,9 +2,12 @@ name: napari-splineit2
 display_name: Napari SplineIt2
 contributions:
   commands:
-    - id: napari-splineit2.make_sample_data
-      python_name: napari_splineit2._sample_data:make_sample_data
-      title: Load sample data from Napari SplineIt2 
+    - id: napari-splineit2.make_sample_data_coins
+      python_name: napari_splineit2._sample_data:make_sample_data_coins
+      title: Load coin sample data
+    - id: napari-splineit2.make_sample_data_large
+      python_name: napari_splineit2._sample_data:make_sample_data_large
+      title: Load large sample data
     - id: napari-splineit2.make_qwidget
       python_name: napari_splineit2._widget:SplineitQWidget
       title: Make example SplineitQWidget
@@ -28,9 +31,12 @@ contributions:
       - '*.splineit'
       accepts_directories: false
   sample_data:
-    - command: napari-splineit2.make_sample_data
-      display_name: Napari SplineIt2
+    - command: napari-splineit2.make_sample_data_coins
+      display_name: Coins
       key: unique_id.1 
+    - command: napari-splineit2.make_sample_data_large
+      display_name: Large
+      key: unique_id.2
   widgets:
     - command: napari-splineit2.make_qwidget
       display_name: Splineit-QWidget

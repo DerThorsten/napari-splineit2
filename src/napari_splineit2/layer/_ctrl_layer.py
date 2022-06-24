@@ -67,10 +67,10 @@ class CtrlPtrLayer(ShapesLayer):
             raise RuntimeError("only polygon and path are supported")
 
         if isinstance(data, list):
-            for poly in data:
-                super(CtrlPtrLayer, self).add(data=poly, shape_type=shape_type, **kwargs)
-                interpolated = self.interpolate(data=poly)
-                self.interpolated_layer.add(data=interpolated, shape_type=shape_type,**kwargs)
+
+            interpolated_polygons = [self.interpolate(data=poly) for poly in data]
+            super(CtrlPtrLayer, self).add(data=data, shape_type=shape_type, **kwargs)
+            self.interpolated_layer.add(data=interpolated_polygons, shape_type=shape_type,**kwargs)
 
         else:
 

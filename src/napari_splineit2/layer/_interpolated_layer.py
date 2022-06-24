@@ -36,11 +36,5 @@ class InterpolatedLayer(ShapesLayer):
         # this is set in the constructor of CtrlPtrLayer
         self.ctrl_layer = None
 
-    #     self.events.mode.connect(self._on_mode)
-
-
-    # def _on_mode(self, event):
-    #     print("on_mode",event.mode)
-
 
 layer_to_controls[InterpolatedLayer] = InterpolatedLayerControls

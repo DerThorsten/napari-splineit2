@@ -20,11 +20,7 @@ def layer_factory(viewer, interpolator, data=None, ctrl_layer_name="CtrLayer", i
     viewer.add_layer(ctrl_layer)
 
     if data is not None:
-        print(data)
-        for poly in data:
-            print(poly,poly.shape)
         ctrl_layer.add_polygons(data=data)
-        # ctrl_layer.run_interpolation()
 
     # if either of the layers is deleted
     # we also delete the other one
@@ -37,9 +33,5 @@ def layer_factory(viewer, interpolator, data=None, ctrl_layer_name="CtrLayer", i
             if interpolated_layer in viewer.layers:
                 viewer.layers.remove(interpolated_layer)
     viewer.layers.events.removed.connect(on_removed)
-
-
-
-
 
     return interpolated_layer, ctrl_layer

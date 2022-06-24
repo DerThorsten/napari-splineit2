@@ -1,11 +1,6 @@
 import json
 
 def write_splineit_json(path, data, attributes):
-    print(f"{path=}")
-    print(f"{data=}")
-    print(f"{attributes=}")
-
-
     def array2list(arr):
         return [[coord[0],coord[1]] for coord in arr]
 

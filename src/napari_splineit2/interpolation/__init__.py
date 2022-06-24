@@ -106,7 +106,6 @@ class SplineInterpolatorUI(QWidget):
 
     def on_order_changed(self):
         value = self.order_widget.value()
-        # print("on_order_changed",value)
         self.interpolator.k = int(value)
         self.layer.run_interpolation()
 
@@ -139,11 +138,7 @@ class SplineInterpolator(object):
             tfine = np.linspace(0, t[-1], self.n * ctrl_points.shape[0])
             xx = splev(tfine, cs_x)[:,None]
             yy = splev(tfine, cs_y)[:,None]
-
-            print(xx.shape,yy.shape)
-
             ret =  np.concatenate([xx, yy], axis=1)
-            print(ret.shape)
             return ret
 
     # return a dict which can be passed to constructor
