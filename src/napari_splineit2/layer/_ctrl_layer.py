@@ -5,16 +5,18 @@ import numpy as np
 from skimage import data
 import random
 import types
+import napari.layers
+
+
 
 from napari.layers.shapes import Shapes as ShapesLayer
 from napari.layers.shapes.shapes import ShapeList as ShapeList
 from napari.layers.shapes.shapes import Mode
 from ._shape_list import CtrlLayerShapeList
 
-
-
 from napari._qt.layer_controls.qt_shapes_controls import QtShapesControls
 from napari._qt.layer_controls.qt_layer_controls_container import layer_to_controls
+
 
 
 class CtrlLayerControls(QtShapesControls):
@@ -99,3 +101,10 @@ class CtrlPtrLayer(ShapesLayer):
 
 
 layer_to_controls[CtrlPtrLayer] = CtrlLayerControls
+
+
+# to be able to use this custom layer with reader/writer plugins
+# we need to add the layer into the `napari.layer` module
+# TODO explain the renaming
+napari.layers.Splineit_Ctrl = CtrlPtrLayer
+napari.layers.NAMES.add("splineit_ctrl")

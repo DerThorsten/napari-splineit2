@@ -9,7 +9,7 @@ Replace code below according to your needs.
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLineEdit
 from magicgui import magic_factory
 
-from .layer.layer_factory import interpolation_factory
+from .layer.layer_factory import layer_factory
 from .interpolation import CubicInterpolator,SplineInterpolator
 
 
@@ -52,7 +52,7 @@ class SplineitQWidget(QWidget):
         interpolator = CubicInterpolator()
         interpolator = SplineInterpolator(k=3)
         base_name = self._get_layer_base_name()
-        interpolation_factory(self.viewer, 
+        layer_factory(self.viewer, 
             interpolator=interpolator, 
             ctrl_layer_name=f"{base_name}-CTRL", 
             interpolated_layer_name=f"{base_name}-Interpolated")

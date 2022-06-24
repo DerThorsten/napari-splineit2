@@ -65,7 +65,6 @@ class SpinSlider(QWidget):
         self.valueChanged.emit(self.slider.value())
 
 
-
 class SplineInterpolatorUI(QWidget):
     def __init__(self, layer):
         super(SplineInterpolatorUI, self).__init__()
@@ -84,7 +83,7 @@ class SplineInterpolatorUI(QWidget):
         self.order_widget = SpinSlider(minmax=[1,3], value=self.interpolator.k)
         self.order_widget.valueChanged.connect(self.on_order_changed)
 
-        self.s_widget = SpinSlider(minmax=[0,100000], value=int(self.interpolator.s))
+        self.s_widget = SpinSlider(minmax=[0,50000], value=int(self.interpolator.s))
         self.s_widget.valueChanged.connect(self.on_s_changed)
 
         self.n_widget = SpinSlider(minmax=[1,100], value=int(self.interpolator.n))
@@ -113,7 +112,6 @@ class SplineInterpolatorUI(QWidget):
 
 class SplineInterpolator(object):
     
-
     UI = SplineInterpolatorUI
     name = "SplineInterpolator"
 
@@ -123,6 +121,7 @@ class SplineInterpolator(object):
         self.n = n
 
     def __call__(self, ctrl_points):
+        ctrl_points = np.require(ctrl_points)
         if ctrl_points.shape[0] < 3:
      
             first_point = ctrl_points[0,:]
@@ -147,8 +146,6 @@ class SplineInterpolator(object):
             print(ret.shape)
             return ret
 
-
-
 class CubicInterpolatorUI(QWidget):
     def __init__(self, layer):
         super(CubicInterpolatorUI, self).__init__()
@@ -159,22 +156,18 @@ class CubicInterpolator(object):
     UI = CubicInterpolatorUI
     name = "CubicInterpolator"
 
-    def __init__(self,closed=True):
-        self.closed = closed
-
+    def __init__(self):
+        pass
     def __call__(self, ctrl_points):
+        ctrl_points = np.require(ctrl_points)
         if ctrl_points.shape[0] < 3:
-            ret =  ctrl_points.copy()
-            if self.closed:
-                first_point = ctrl_points[0,:]
-                return np.concatenate([ctrl_points, first_point[None,:]], axis=0)
-            else:
-                return ret
+            first_point = ctrl_points[0,:]
+            return np.concatenate([ctrl_points, first_point[None,:]], axis=0)
+
         else:
 
-            if self.closed:
-                first_point = ctrl_points[0,:]
-                ctrl_points =  np.concatenate([ctrl_points, first_point[None,:]], axis=0)
+            first_point = ctrl_points[0,:]
+            ctrl_points =  np.concatenate([ctrl_points, first_point[None,:]], axis=0)
 
             t = np.arange(ctrl_points.shape[0])
             cs_x = CubicSpline(t, ctrl_points[:,0], bc_type='periodic')
@@ -187,20 +180,11 @@ class CubicInterpolator(object):
             ret =  np.concatenate([xx, yy], axis=1)
             return ret
 
+interpolators = {
+    CubicInterpolator.name : CubicInterpolator,
+    SplineInterpolator.name : SplineInterpolator
+}
 
 
-if __name__ == "__main__":
-    
-    ctrl_points = np.array([
-        (10,10),
-        (30, 10),
-        (30, 30)
-
-    ])
-
-
-    ip = CubicInterpolator(closed=True)
-
-    interpolated = ip(ctrl_points)
-
-    print(interpolated)
+def interpolator_factory(name, **kwargs):
+    return interpolators[name](**kwargs)

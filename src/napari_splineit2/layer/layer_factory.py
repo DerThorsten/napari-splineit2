@@ -5,18 +5,22 @@ from . _interpolated_layer import InterpolatedLayer
 from . _ctrl_layer import CtrlPtrLayer
 
 
-def interpolation_factory(viewer, interpolator, ctrl_layer_name="CtrLayer", interpolated_layer_name="Interpolated"):
+def layer_factory(viewer, interpolator, data=None, ctrl_layer_name="CtrLayer", interpolated_layer_name="Interpolated"):
 
 
     interpolated_layer = InterpolatedLayer(name=interpolated_layer_name)
     viewer.add_layer(interpolated_layer)
 
-    ctrl_layer = CtrlPtrLayer(name=ctrl_layer_name, 
+    ctrl_layer = CtrlPtrLayer(
+        name=ctrl_layer_name, 
         interpolator=interpolator,
         interpolated_layer=interpolated_layer)
 
     viewer.add_layer(ctrl_layer)
 
+    if data is not None:
+        ctrl_layer.add_polygons(data=data)
+        ctrl_layer.run_interpolation()
 
     # if either of the layers is deleted
     # we also delete the other one
