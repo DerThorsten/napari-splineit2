@@ -8,5 +8,5 @@ except ImportError:
 
 
 from ._sample_data import make_sample_data_coins 
-from ._widget import SplineitQWidget, example_magic_widget
+from ._widget import SplineitQWidget
 from ._reader import get_reader

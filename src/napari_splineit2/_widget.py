@@ -14,10 +14,6 @@ from .interpolation import CubicInterpolator,SplineInterpolator
 
 
 class SplineitQWidget(QWidget):
-    # your QWidget.__init__ can optionally request the napari viewer instance
-    # in one of two ways:
-    # 1. use a parameter called `napari_viewer`, as done here
-    # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(self, napari_viewer):
         super().__init__()
         self.viewer = napari_viewer
@@ -56,15 +52,3 @@ class SplineitQWidget(QWidget):
             interpolator=interpolator, 
             ctrl_layer_name=f"{base_name}-CTRL", 
             interpolated_layer_name=f"{base_name}-Interpolated")
-
-
-@magic_factory
-def example_magic_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
-
-
-# Uses the `autogenerate: true` flag in the plugin manifest
-# to indicate it should be wrapped as a magicgui to autogenerate
-# a widget.
-def example_function_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")

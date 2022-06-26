@@ -554,8 +554,8 @@ def make_sample_data_large(radius=10.0):
     ], dtype='float')*radius
 
     list_of_polygons = []
-    for x in range(40):
-        for y in range(40):
+    for x in range(10):
+        for y in range(10):
             p = base.copy() + [x*diam,y*diam]
             list_of_polygons.append(p)
 

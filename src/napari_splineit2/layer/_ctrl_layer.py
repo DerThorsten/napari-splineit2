@@ -5,15 +5,16 @@ import numpy as np
 from skimage import data
 import random
 import types
+
+from qtpy.QtWidgets import QComboBox
+
+from ..interpolation import registered_interplators,interpolator_factory
+from ._shape_list import CtrlLayerShapeList
+
 import napari.layers
-
-
-
 from napari.layers.shapes import Shapes as ShapesLayer
 from napari.layers.shapes.shapes import ShapeList as ShapeList
 from napari.layers.shapes.shapes import Mode
-from ._shape_list import CtrlLayerShapeList
-
 from napari._qt.layer_controls.qt_shapes_controls import QtShapesControls
 from napari._qt.layer_controls.qt_layer_controls_container import layer_to_controls
 
@@ -23,20 +24,59 @@ class CtrlLayerControls(QtShapesControls):
     def __init__(self, layer):
         super(CtrlLayerControls, self).__init__(layer)
 
-        # we only allow for polygon shapes and disable
-        # all other shapes
+        # we only allow for polygon shapes and disable all other shapes
         self.rectangle_button.setEnabled(False)
         self.ellipse_button.setEnabled(False)
         self.line_button.setEnabled(False)
         self.path_button.setEnabled(False)
 
-        interpolator_ui_cls = type(layer.interpolator).UI
 
-        self.layer_ui = interpolator_ui_cls(layer=layer)
 
-        # self.layout().addRow(type(layer.interpolator).name, self.layer_ui)
+        # the current interpolator
+        interpolator_type = type(layer.interpolator)
+
+        # # dropdown list with all interpolator types
+        self.method_selector = QComboBox()
+        self.method_selector.addItems(registered_interplators.keys())
+        self.method_selector.setCurrentText(interpolator_type.name)
+        self.method_selector.currentIndexChanged.connect(self.on_method_change)
+
+        # the ui of the interpolator itself
+        self.layer_ui = interpolator_type.UI(layer=layer)
+
+        self.layout().addRow("method", self.method_selector)
         self.layout().addRow(self.layer_ui)
 
+
+        # keep track of the parameters of the individual method
+        # st. we can restore the last used parameter when 
+        # a already used method is selected from the combo box
+        self.method_kwargs = {
+            interpolator_type.name : layer.interpolator.marshal()
+        }
+
+    def on_method_change(self):
+
+        # store the parameters of the last method
+        last_method = self.layer.interpolator
+        self.method_kwargs[type(last_method).name] = last_method.marshal()
+
+        # the new method
+        new_method_name = self.method_selector.currentText()
+
+        # restore parameters
+        kwargs = self.method_kwargs.get(new_method_name, {})
+        interpolator = interpolator_factory(name=new_method_name, **kwargs)
+        self.layer.interpolator = interpolator
+
+        # remove old control ui and add new ui
+        interpolator_ui_cls = type(interpolator).UI
+        self.layout().removeRow(self.layer_ui)
+        self.layer_ui = interpolator_ui_cls(layer=self.layer)
+        self.layout().addRow(self.layer_ui)
+
+        # run interpolation 
+        self.layer.run_interpolation()
 
 
 class CtrlPtrLayer(ShapesLayer):

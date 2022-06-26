@@ -2,9 +2,9 @@ import numpy as np
 
 from scipy.interpolate import CubicSpline,splrep,splev
 
-from ..utils import phi_generator_impl,getCoefsFromKnots
-from ..splinegenerator import SplineCurveSample, B3, B2
-
+from .utils import phi_generator_impl,getCoefsFromKnots
+from .splinegenerator import SplineCurveSample, B3, B2
+from ..widgets import SpinSlider
 
 from qtpy.QtWidgets import QWidget,QHBoxLayout,QSlider,QFormLayout,QDoubleSpinBox,QSpinBox
 from qtpy.QtCore import Qt,QSignalBlocker,Signal
@@ -20,51 +20,6 @@ def curve_from_cp(cp):
     return cp.copy()
 
 
-class SpinSlider(QWidget):
-
-    valueChanged = Signal(int)
-
-    def __init__(self, minmax, value):
-        super(SpinSlider, self).__init__()
-
-
-
-
-        layout = QHBoxLayout()
-        self.setLayout(layout)
-
-        self.slider = QSlider(Qt.Horizontal)
-        self.slider.setTickInterval(1)
-        self.slider.setMinimum(minmax[0])
-        self.slider.setMaximum(minmax[1])
-        self.slider.setValue(value)
-        self.slider.valueChanged.connect(self._on_slider_changed)
-
-        self.spinbox = QSpinBox()
-        self.spinbox.setMinimum(minmax[0])
-        self.spinbox.setMaximum(minmax[1])
-        self.spinbox.setValue(value)
-        self.spinbox.valueChanged.connect(self._on_spin_box_canged)
-
-        layout.addWidget(self.spinbox,1)
-        layout.addWidget(self.slider,4)
-
-    def value(self):
-        return self.slider.value()
-
-    def _on_slider_changed(self):
-
-        with QSignalBlocker(self.spinbox) as blocker:
-            self.spinbox.setValue(self.slider.value())
-
-        self.valueChanged.emit(self.slider.value())
-
-    def _on_spin_box_canged(self):
-        with QSignalBlocker(self.slider) as blocker:
-            self.slider.setValue(self.spinbox.value())
-        self.valueChanged.emit(self.slider.value())
-
-
 class SplineInterpolatorUI(QWidget):
     def __init__(self, layer):
         super(SplineInterpolatorUI, self).__init__()
@@ -72,13 +27,6 @@ class SplineInterpolatorUI(QWidget):
         self.interpolator = self.layer.interpolator
         layout = QFormLayout()
         self.setLayout(layout)
-
-        # self.order_slider = QSlider(Qt.Horizontal)
-        # self.order_slider.setTickInterval(1)
-        # self.order_slider.setMinimum(1)
-        # self.order_slider.setMaximum(3)
-        # self.order_slider.setValue(self.interpolator.k)
-        # self.order_slider.valueChanged.connect(self.on_order_changed)
 
         self.order_widget = SpinSlider(minmax=[1,3], value=self.interpolator.k)
         self.order_widget.valueChanged.connect(self.on_order_changed)
@@ -186,11 +134,11 @@ class CubicInterpolator(object):
         return dict()
 
 
-interpolators = {
+registered_interplators = {
     CubicInterpolator.name : CubicInterpolator,
     SplineInterpolator.name : SplineInterpolator
 }
 
 
 def interpolator_factory(name, **kwargs):
-    return interpolators[name](**kwargs)
+    return registered_interplators[name](**kwargs)
