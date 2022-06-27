@@ -93,7 +93,7 @@ class CtrlPtrLayer(ShapesLayer):
         return "shapes"
 
     def add(self, data, *, shape_type, **kwargs):
-        if shape_type != "polygon":  # and shape_type != "path":
+        if shape_type != "polygon" and shape_type != "path":
             raise RuntimeError("only polygon shape type is allowed")
 
         if isinstance(data, list):
