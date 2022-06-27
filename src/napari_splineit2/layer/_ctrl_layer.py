@@ -1,28 +1,23 @@
-
+# fmt: on
 import napari
-
+import napari.layers
 import numpy as np
-from skimage import data
-import random
-import types
 
+from napari._qt.layer_controls.qt_layer_controls_container import \
+    layer_to_controls  # fmt: skip
+from napari._qt.layer_controls.qt_shapes_controls import QtShapesControls
+from napari.layers.shapes import Shapes as ShapesLayer
 from qtpy.QtWidgets import QComboBox
 
-from ..interpolation import registered_interplators,interpolator_factory
+from ..interpolation import interpolator_factory, registered_interplators
 from ._shape_list import CtrlLayerShapeList
 
-import napari.layers
-from napari.layers.shapes import Shapes as ShapesLayer
-from napari.layers.shapes.shapes import ShapeList as ShapeList
-from napari.layers.shapes.shapes import Mode
-from napari._qt.layer_controls.qt_shapes_controls import QtShapesControls
-from napari._qt.layer_controls.qt_layer_controls_container import layer_to_controls
-
+# fmt: off
 
 
 class CtrlLayerControls(QtShapesControls):
     def __init__(self, layer):
-        super(CtrlLayerControls, self).__init__(layer)
+        super().__init__(layer)
 
         # we only allow for polygon shapes and disable all other shapes
         self.rectangle_button.setEnabled(False)
@@ -30,30 +25,25 @@ class CtrlLayerControls(QtShapesControls):
         self.line_button.setEnabled(False)
         self.path_button.setEnabled(False)
 
-
-
         # the current interpolator
-        interpolator_type = type(layer.interpolator)
+        ip_type = type(layer.interpolator)
 
         # # dropdown list with all interpolator types
         self.method_selector = QComboBox()
         self.method_selector.addItems(registered_interplators.keys())
-        self.method_selector.setCurrentText(interpolator_type.name)
+        self.method_selector.setCurrentText(ip_type.name)
         self.method_selector.currentIndexChanged.connect(self.on_method_change)
 
         # the ui of the interpolator itself
-        self.layer_ui = interpolator_type.UI(layer=layer)
+        self.layer_ui = ip_type.UI(layer=layer)
 
         self.layout().addRow("method", self.method_selector)
         self.layout().addRow(self.layer_ui)
 
-
         # keep track of the parameters of the individual method
-        # st. we can restore the last used parameter when 
-        # a already used method is selected from the combo box
-        self.method_kwargs = {
-            interpolator_type.name : layer.interpolator.marshal()
-        }
+        # st. we can restore the last used parameter when
+        # an already used method is selected from the combo box
+        self.method_kwargs = {ip_type.name: layer.interpolator.marshal()}
 
     def on_method_change(self):
 
@@ -75,7 +65,7 @@ class CtrlLayerControls(QtShapesControls):
         self.layer_ui = interpolator_ui_cls(layer=self.layer)
         self.layout().addRow(self.layer_ui)
 
-        # run interpolation 
+        # run interpolation
         self.layer.run_interpolation()
 
 
@@ -84,9 +74,9 @@ class CtrlPtrLayer(ShapesLayer):
         self.interpolator = interpolator
         self.interpolated_layer = interpolated_layer
         self.interpolated_layer.ctrl_layer = self
-        super(CtrlPtrLayer, self).__init__(*args,    
-         edge_color="transparent",
-        face_color="transparent",**kwargs)
+        super().__init__(
+            *args, edge_color="transparent", face_color="transparent", **kwargs
+        )
 
         self._data_view = CtrlLayerShapeList(
             ndisplay=self._ndisplay,
@@ -103,22 +93,28 @@ class CtrlPtrLayer(ShapesLayer):
         return "shapes"
 
     def add(self, data, *, shape_type, **kwargs):
-        if shape_type != "polygon" and shape_type!="path":
-            raise RuntimeError("only polygon and path are supported")
+        if shape_type != "polygon":  # and shape_type != "path":
+            raise RuntimeError("only polygon shape type is allowed")
 
         if isinstance(data, list):
 
-            interpolated_polygons = [self.interpolate(data=poly) for poly in data]
-            super(CtrlPtrLayer, self).add(data=data, shape_type=shape_type, **kwargs)
-            self.interpolated_layer.add(data=interpolated_polygons, shape_type=shape_type,**kwargs)
+            super().add(data=data, shape_type=shape_type, **kwargs)
+
+            self.interpolated_layer.add(
+                data=[self.interpolate(data=poly) for poly in data],
+                shape_type=shape_type,
+                **kwargs
+            )
 
         else:
 
-            super(CtrlPtrLayer, self).add(data=data, shape_type=shape_type, **kwargs)
+            super().add(data=data, shape_type=shape_type, **kwargs)
             interpolated = self.interpolate(data=data)
-            self.interpolated_layer.add(data=interpolated, shape_type=shape_type,**kwargs)
+            self.interpolated_layer.add(
+                data=interpolated, shape_type=shape_type, **kwargs
+            )
 
-    def interpolate(self,data):
+    def interpolate(self, data):
         return self.interpolator(data)
 
     def run_interpolation(self):
@@ -131,31 +127,19 @@ class CtrlPtrLayer(ShapesLayer):
 
     @shape_type.setter
     def shape_type(self, shape_type):
-        self._finish_drawing()
-
-        new_data_view = CtrlLayerShapeList(
-            ctrl_layer=self, interpolated_layer=interpolated_layer
-        )
-        shape_inputs = zip(
-            self._data_view.data,
-            ensure_iterable(shape_type),
-            self._data_view.edge_widths,
-            self._data_view.edge_color,
-            self._data_view.face_color,
-            self._data_view.z_indices,
-        )
-
-        self._add_shapes_to_view(shape_inputs, new_data_view)
-
-        self._data_view = new_data_view
-        self._update_dims()
+        if shape_type != "polygon":
+            raise RuntimeError("only polygon shape is allowed")
 
 
 layer_to_controls[CtrlPtrLayer] = CtrlLayerControls
 
 
-# to be able to use this custom layer with reader/writer plugins
-# we need to add the layer into the `napari.layer` module
-# TODO explain the renaming
+# Supporting Napari readers with a custom layer  is a bit hacky:
+#  - Napari assumes that the layer is in the namespace of `napari.layers`.
+#  - The small-cased name of the layer is in `napari.layers.NAMES`.
+#  - There is a method add_<layer-name> (ie add_splineit_ctrl)
+#    in the viewer class (implemented in `_reader.py`)
+#  - We use the name `Splineit_Ctrl` instead of just `CtrlPtrLayer`
+#    to avoid any name clashes.
 napari.layers.Splineit_Ctrl = CtrlPtrLayer
 napari.layers.NAMES.add("splineit_ctrl")
