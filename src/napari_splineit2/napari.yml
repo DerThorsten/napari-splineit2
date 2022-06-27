@@ -4,10 +4,28 @@ contributions:
   commands:
     - id: napari-splineit2.make_sample_data_coins
       python_name: napari_splineit2._sample_data:make_sample_data_coins
-      title: Load coin sample data
-    - id: napari-splineit2.make_sample_data_large
-      python_name: napari_splineit2._sample_data:make_sample_data_large
-      title: Load large sample data
+      title: Coin sample data
+
+    - id: napari-splineit2.make_sample_data_s
+      python_name: napari_splineit2._sample_data:make_sample_data_l
+      title: toy-data small
+
+    - id: napari-splineit2.make_sample_data_m
+      python_name: napari_splineit2._sample_data:make_sample_data_m
+      title: toy-data medium
+
+    - id: napari-splineit2.make_sample_data_l
+      python_name: napari_splineit2._sample_data:make_sample_data_l
+      title: toy-data large
+
+    - id: napari-splineit2.make_sample_data_xl
+      python_name: napari_splineit2._sample_data:make_sample_data_xl
+      title: toy-data extra large
+
+    - id: napari-splineit2.make_sample_data_xxl
+      python_name: napari_splineit2._sample_data:make_sample_data_xxl
+      title: toy-data extra large
+
     - id: napari-splineit2.make_qwidget
       python_name: napari_splineit2._widget:SplineitQWidget
       title: Make example SplineitQWidget
@@ -33,10 +51,22 @@ contributions:
   sample_data:
     - command: napari-splineit2.make_sample_data_coins
       display_name: Coins
-      key: unique_id.1 
-    - command: napari-splineit2.make_sample_data_large
-      display_name: Large
+      key: unique_id.1
+    - command: napari-splineit2.make_sample_data_s
+      display_name: small toy data
       key: unique_id.2
+    - command: napari-splineit2.make_sample_data_m
+      display_name: medium toy data
+      key: unique_id.3
+    - command: napari-splineit2.make_sample_data_l
+      display_name: large toy data
+      key: unique_id.4
+    - command: napari-splineit2.make_sample_data_xl
+      display_name: extra large toy data
+      key: unique_id.5
+    - command: napari-splineit2.make_sample_data_xxl
+      display_name: extra large toy data
+      key: unique_id.6
   widgets:
     - command: napari-splineit2.make_qwidget
       display_name: Splineit-QWidget
@@ -44,4 +74,4 @@ contributions:
     #   display_name: Example Magic Widget
     # - command: napari-splineit2.make_func_widget
     #   autogenerate: true
-    #   display_name: Example Function Widget 
+    #   display_name: Example Function Widget

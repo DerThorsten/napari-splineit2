@@ -6,9 +6,9 @@ see: https://napari.org/plugins/stable/npe2_manifest_specification.html
 
 Replace code below according to your needs.
 """
-from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLineEdit
+from qtpy.QtWidgets import QFormLayout, QLineEdit, QPushButton, QWidget
 import numpy as np
-
+from .widgets import SpinSlider
 from .layer.layer_factory import layer_factory
 from .interpolation import CubicInterpolator, SplineInterpolator
 from .interpolation.splinegenerator import SplineCurve, B3
@@ -27,13 +27,16 @@ class SplineitQWidget(QWidget):
 
     def _setup_ui(self):
         self._layer_name_edit = QLineEdit("Splines")
-        self._add_layer_btn = QPushButton("Add Layers")
-        self._add_from_selected_mask = QPushButton("Add From Mask")
+        self._add_layer_btn = QPushButton("Add empty layer")
 
-        self.setLayout(QHBoxLayout())
-        self.layout().addWidget(self._layer_name_edit)
-        self.layout().addWidget(self._add_layer_btn)
-        self.layout().addWidget(self._add_from_selected_mask)
+        self.n_ctrl_points_widget = SpinSlider(minmax=[4, 200], value=20)
+
+        self._add_from_selected_mask = QPushButton("Add layer from mask")
+        self.setLayout(QFormLayout())
+        self.layout().addRow("name", self._layer_name_edit)
+        self.layout().addRow(self._add_layer_btn)
+        self.layout().addRow("#ctrl-points", self.n_ctrl_points_widget)
+        self.layout().addRow(self._add_from_selected_mask)
 
     def _connect_ui(self):
         self._add_layer_btn.clicked.connect(self._on_add_layers)
@@ -56,7 +59,7 @@ class SplineitQWidget(QWidget):
         if mask.ndim != 2:
             raise RuntimeError("mask must be a 2D image")
 
-        M = 20
+        M = self.n_ctrl_points_widget.value()
         splineCurve = SplineCurve(M, B3(), True, 0)
         cp = splineCurve.getCoefsFromBinaryMask(mask)
 
