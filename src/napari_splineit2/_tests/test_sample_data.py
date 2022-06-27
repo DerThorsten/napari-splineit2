@@ -1,7 +1,6 @@
-# from napari_splineit2 import make_sample_data
-
-# add your tests here...
+from napari_splineit2 import make_sample_data_coins
 
 
-def test_something():
-    pass
+def test_sample_data_coins():
+    data = make_sample_data_coins()
+    assert len(data) == 2
