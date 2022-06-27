@@ -7,10 +7,11 @@ see: https://napari.org/plugins/stable/npe2_manifest_specification.html
 Replace code below according to your needs.
 """
 from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton, QLineEdit
-from magicgui import magic_factory
+import numpy as np
 
 from .layer.layer_factory import layer_factory
-from .interpolation import CubicInterpolator,SplineInterpolator
+from .interpolation import CubicInterpolator, SplineInterpolator
+from .interpolation.splinegenerator import SplineCurve, B3
 
 
 class SplineitQWidget(QWidget):
@@ -24,31 +25,57 @@ class SplineitQWidget(QWidget):
         # connect the widgets events / signals
         self._connect_ui()
 
-
     def _setup_ui(self):
         self._layer_name_edit = QLineEdit("Splines")
-        self._add_layer_btn = QPushButton("Click me!!!!")
-        
+        self._add_layer_btn = QPushButton("Add Layers")
+        self._add_from_selected_mask = QPushButton("Add From Mask")
 
         self.setLayout(QHBoxLayout())
         self.layout().addWidget(self._layer_name_edit)
         self.layout().addWidget(self._add_layer_btn)
+        self.layout().addWidget(self._add_from_selected_mask)
 
     def _connect_ui(self):
-        self._add_layer_btn.clicked.connect(self._on_click)
+        self._add_layer_btn.clicked.connect(self._on_add_layers)
+        self._add_from_selected_mask.clicked.connect(
+            self._on_add_layers_from_mask
+        )
 
     # todo check for name clashes
     def _get_layer_base_name(self):
         base_name = self._layer_name_edit.text()
         return base_name
 
+    def _on_add_layers_from_mask(self):
+        selected = list(self.viewer.layers.selection)
+        if len(selected) != 1:
+            raise RuntimeError("exactly one layer must be selected")
+        selected_layer = selected[0]
+        mask = selected_layer.data_raw
+        mask = np.squeeze(mask)
+        if mask.ndim != 2:
+            raise RuntimeError("mask must be a 2D image")
 
+        M = 20
+        splineCurve = SplineCurve(M, B3(), True, 0)
+        cp = splineCurve.getCoefsFromBinaryMask(mask)
 
-    def _on_click(self):
         interpolator = CubicInterpolator()
+        base_name = self._get_layer_base_name()
+        layer_factory(
+            self.viewer,
+            interpolator=interpolator,
+            data=cp,
+            ctrl_layer_name=f"{base_name}-CTRL",
+            interpolated_layer_name=f"{base_name}-Interpolated",
+        )
+
+    def _on_add_layers(self):
         interpolator = SplineInterpolator(k=3)
         base_name = self._get_layer_base_name()
-        layer_factory(self.viewer, 
-            interpolator=interpolator, 
-            ctrl_layer_name=f"{base_name}-CTRL", 
-            interpolated_layer_name=f"{base_name}-Interpolated")
+        layer_factory(
+            self.viewer,
+            interpolator=interpolator,
+            ctrl_layer_name=f"{base_name}-CTRL",
+            interpolated_layer_name=f"{base_name}-Interpolated",
+        )
