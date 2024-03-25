@@ -140,11 +140,11 @@ class B2(SplineGenerator):
     def value(self, x):
         val = 0.0
         if -1.5 <= x and x <= -0.5:
-            val = 0.5 * (x ** 2) + 1.5 * x + 1.125
+            val = 0.5 * (x**2) + 1.5 * x + 1.125
         elif -0.5 < x and x <= 0.5:
             val = -x * x + 0.75
         elif 0.5 < x and x <= 1.5:
-            val = 0.5 * (x ** 2) - 1.5 * x + 1.125
+            val = 0.5 * (x**2) - 1.5 * x + 1.125
         return val
 
     def support(self):
@@ -166,16 +166,16 @@ class B3(SplineGenerator):
 
         cp = np.zeros(self.M)
         for k in range(0, self.M):
-            cp[0] += s[(self.M - k) % self.M] * (pole ** k)
-        cp[0] *= 1.0 / (1.0 - (pole ** self.M))
+            cp[0] += s[(self.M - k) % self.M] * (pole**k)
+        cp[0] *= 1.0 / (1.0 - (pole**self.M))
 
         for k in range(1, self.M):
             cp[k] = s[k] + pole * cp[k - 1]
 
         cm = np.zeros(self.M)
         for k in range(0, self.M):
-            cm[self.M - 1] += (pole ** k) * cp[k]
-        cm[self.M - 1] *= pole / (1.0 - (pole ** self.M))
+            cm[self.M - 1] += (pole**k) * cp[k]
+        cm[self.M - 1] *= pole / (1.0 - (pole**self.M))
         cm[self.M - 1] += cp[self.M - 1]
         cm[self.M - 1] *= -pole
 
