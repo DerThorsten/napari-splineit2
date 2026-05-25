@@ -1,21 +1,26 @@
 from napari.utils.events import Event
 
-from . _shape_list import CtrlLayerShapeList
-from . _interpolated_layer import InterpolatedLayer
-from . _ctrl_layer import CtrlPtrLayer
+from ._interpolated_layer import InterpolatedLayer
+from ._ctrl_layer import CtrlPtrLayer
 
 
-def layer_factory(viewer, interpolator, data=None, ctrl_layer_name="CtrLayer", interpolated_layer_name="Interpolated"):
-
+def layer_factory(
+    viewer,
+    interpolator,
+    data=None,
+    ctrl_layer_name="CtrLayer",
+    interpolated_layer_name="Interpolated",
+):
 
     interpolated_layer = InterpolatedLayer(name=interpolated_layer_name)
     viewer.add_layer(interpolated_layer)
 
     ctrl_layer = CtrlPtrLayer(
-        name=ctrl_layer_name, 
-        metadata={"interpolator":interpolator},
+        name=ctrl_layer_name,
+        metadata={"interpolator": interpolator},
         interpolator=interpolator,
-        interpolated_layer=interpolated_layer)
+        interpolated_layer=interpolated_layer,
+    )
 
     viewer.add_layer(ctrl_layer)
 
@@ -32,6 +37,7 @@ def layer_factory(viewer, interpolator, data=None, ctrl_layer_name="CtrLayer", i
         elif layer == ctrl_layer:
             if interpolated_layer in viewer.layers:
                 viewer.layers.remove(interpolated_layer)
+
     viewer.layers.events.removed.connect(on_removed)
 
     return interpolated_layer, ctrl_layer
