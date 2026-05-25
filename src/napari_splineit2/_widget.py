@@ -6,6 +6,7 @@ see: https://napari.org/plugins/stable/npe2_manifest_specification.html
 
 Replace code below according to your needs.
 """
+
 from qtpy.QtWidgets import QFormLayout, QLineEdit, QPushButton, QWidget
 import numpy as np
 from .widgets import SpinSlider

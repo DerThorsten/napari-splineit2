@@ -2,7 +2,6 @@ from .cubic import CubicInterpolator
 from .spline import SplineInterpolator
 from .uhlmann import UhlmannSplines
 
-
 registered_interplators = {
     CubicInterpolator.name: CubicInterpolator,
     SplineInterpolator.name: SplineInterpolator,
